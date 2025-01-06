@@ -13,8 +13,7 @@ module.exports = {
         },
         prerelease: false,
         generateReleaseNotes: true,
-        draft: true,
-      }
+      },
     }
   ],
   packagerConfig: {

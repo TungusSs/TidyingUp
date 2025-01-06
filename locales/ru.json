@@ -1,0 +1,16 @@
+{
+    "title": "Очистка папок",
+    "selectFolder": "Выбрать папку",
+    "stopWatching": "Остановить наблюдение",
+    "noFolderSelected": "Папка не выбрана.",
+    "watchingFolder": "Наблюдение за папкой:",
+    "notificationFileOrganized": "Файл организован",
+    "notificationMessage": "был перемещен в",
+    "language": "Язык",
+    "images": "Изображения",
+    "videos": "Видео",
+    "music": "Аудио",
+    "archives": "Архивы",
+    "documents": "Документы",
+    "other": "Прочее"
+}

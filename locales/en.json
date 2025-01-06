@@ -1,0 +1,16 @@
+{
+    "title": "Folder Cleaner",
+    "selectFolder": "Select Folder",
+    "stopWatching": "Stop Watching",
+    "noFolderSelected": "No folder selected.",
+    "watchingFolder": "Watching folder:",
+    "notificationFileOrganized": "File Organized",
+    "notificationMessage": "was moved to",
+    "language": "Language",
+    "images": "Images",
+    "videos": "Video",
+    "music": "Audio",
+    "archives": "Archives",
+    "documents": "Documents",
+    "other": "Other"
+}

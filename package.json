@@ -7,10 +7,23 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "package": "electron-forge package",
     "make": "electron-forge make",
-    "publish": "electron-forge publish"
+    "publish": "env-cmd electron-forge publish"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TungusSs/TidyingUp.git"
+  },
+  "keywords": [
+    "Folders",
+    "Sorting",
+    "App"
+  ],
   "author": "Tungus",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TungusSs/TidyingUp.git/issues"
+  },
+  "homepage": "https://github.com/TungusSs/TidyingUp.git#readme",
   "description": "App for sorting your folders",
   "devDependencies": {
     "@electron-forge/cli": "^7.6.0",
@@ -26,7 +39,9 @@
   },
   "dependencies": {
     "chokidar": "^4.0.3",
+    "dotenv": "^16.4.7",
     "electron-squirrel-startup": "^1.0.1",
+    "env-cmd": "^10.1.0",
     "update-electron-app": "^3.1.0"
   }
 }

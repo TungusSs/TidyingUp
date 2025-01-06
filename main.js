@@ -121,7 +121,7 @@ function changeLanguage(locale) {
 
 // Создаем значок в трее
 function createTray() {
-    tray = new Tray(path.join(__dirname, 'tray-icon.png')); // Убедитесь, что у вас есть этот файл
+    tray = new Tray(path.join(__dirname, '/images/icon.ico'));
     const contextMenu = Menu.buildFromTemplate([
         {
             label: translations.title || 'Folder Cleaner',

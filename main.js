@@ -1,23 +1,27 @@
-const { app } = require('electron');
-
-// run this as early in the main process as possible
-if (require('electron-squirrel-startup')) app.quit();
-
-const { updateElectronApp } = require('update-electron-app');
-updateElectronApp(); // additional configuration options available
-
-const { BrowserWindow, ipcMain, dialog, Tray, Menu, Notification } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, Tray, Menu, Notification } = require('electron');
 const fs = require('fs');
 const path = require('path');
+const { updateElectronApp } = require('update-electron-app');
+
+// Running this as early in the main process as possible
+// Запускаем это как можно раньше в основном процессе
+if (require('electron-squirrel-startup')) app.quit();
+
+updateElectronApp();
 
 let mainWindow;
 let tray;
 let watcher = null;
 let watchedFolder = null;
-let currentLocale = 'en'; // Язык по умолчанию
-let translations = loadTranslations(currentLocale); // Инициализируем переводы
+let currentLocale = 'en'; // Default language / Язык по умолчанию
+let translations = loadTranslations(currentLocale); // Initialize translations / Инициализируем переводы
 
-// Загружаем переводы из JSON
+/**
+ * Load translations from JSON
+ * Загружаем переводы из JSON
+ * @param {string} locale - The locale to load translations for
+ * @returns {object} - The translations object
+ */
 function loadTranslations(locale) {
     const localePath = path.join(__dirname, 'locales', `${locale}.json`);
     if (fs.existsSync(localePath)) {
@@ -27,16 +31,21 @@ function loadTranslations(locale) {
     return {};
 }
 
-// Создаем главное окно
+/**
+ * Create the main application window
+ * Создаем главное окно приложения
+ */
 function createWindow() {
     mainWindow = new BrowserWindow({
-        width: 800,
-        height: 600,
+        width: 500,
+        height: 300,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             contextIsolation: true,
             nodeIntegration: false,
         },
+        icon: path.join(__dirname, 'images/icon.ico'),
+        maximizable: false,
     });
 
     mainWindow.loadFile('index.html');
@@ -44,11 +53,14 @@ function createWindow() {
         mainWindow = null;
     });
 
-    createMenu(); // Создаем меню
-    createTray();
+    createMenu(); // Create the application menu / Создаем меню приложения
+    createTray(); // Create the system tray icon / Создаем значок в системном трее
 }
 
-// Создаем меню
+/**
+ * Create the application menu
+ * Создаем меню приложения
+ */
 function createMenu() {
     const template = [
         {
@@ -105,21 +117,28 @@ function createMenu() {
     ];
 
     const menu = Menu.buildFromTemplate(template);
-    Menu.setApplicationMenu(menu); // Устанавливаем меню для всего приложения
+    Menu.setApplicationMenu(menu); // Set the application menu / Устанавливаем меню для всего приложения
 }
 
-// Изменение языка
+/**
+ * Change the application language
+ * Изменение языка приложения
+ * @param {string} locale - The new locale to set
+ */
 function changeLanguage(locale) {
     currentLocale = locale;
     translations = loadTranslations(currentLocale);
-    mainWindow.webContents.send('translations-updated', translations); // Обновляем текст в рендерере
-    createMenu(); // Обновляем меню
+    mainWindow.webContents.send('translations-updated', translations); // Update text in renderer / Обновляем текст в рендерере
+    createMenu(); // Update the menu / Обновляем меню
     if (tray) {
-        createTray(); // Обновляем текст в трее
+        createTray(); // Update tray text / Обновляем текст в трее
     }
 }
 
-// Создаем значок в трее
+/**
+ * Create the system tray icon
+ * Создаем значок в системном трее
+ */
 function createTray() {
     tray = new Tray(path.join(__dirname, '/images/icon.ico'));
     const contextMenu = Menu.buildFromTemplate([
@@ -148,6 +167,7 @@ function createTray() {
     });
 }
 
+// Run the application
 // Запускаем приложение
 app.on('ready', createWindow);
 
@@ -163,7 +183,10 @@ app.on('activate', () => {
     }
 });
 
-// Выбор папки
+/**
+ * Handle folder selection
+ * Обработка выбора папки
+ */
 ipcMain.handle('select-folder', async () => {
     try {
         const result = await dialog.showOpenDialog({
@@ -184,7 +207,10 @@ ipcMain.handle('select-folder', async () => {
     return null;
 });
 
-// Остановка наблюдения
+/**
+ * Stop watching the folder
+ * Остановка наблюдения за папкой
+ */
 ipcMain.on('stop-watching', () => {
     if (watcher) {
         watcher.close();
@@ -193,10 +219,14 @@ ipcMain.on('stop-watching', () => {
     }
 });
 
-// Наблюдение за папкой
+/**
+ * Start watching a folder for changes
+ * Начинаем наблюдение за изменениями в папке
+ * @param {string} folderPath - The path of the folder to watch
+ */
 function startWatching(folderPath) {
     if (watcher) {
-        watcher.close(); // Закрываем предыдущий watcher, если он есть
+        watcher.close(); // Close previous watcher if exists / Закрываем предыдущий watcher, если он есть
     }
 
     watcher = fs.watch(folderPath, (eventType, fileName) => {
@@ -206,7 +236,12 @@ function startWatching(folderPath) {
     });
 }
 
-// Организация файлов
+/**
+ * Organize downloaded files into categories
+ * Организация загруженных файлов по категориям
+ * @param {string} folderPath - The path of the folder
+ * @param {string} fileName - The name of the file
+ */
 function organizeDownloads(folderPath, fileName) {
     const category = getFileCategory(fileName);
     const categoryPath = path.join(folderPath, category);
@@ -227,7 +262,12 @@ function organizeDownloads(folderPath, fileName) {
     });
 }
 
-// Категоризация файлов
+/**
+ * Get the category of a file based on its extension
+ * Получаем категорию файла на основе его расширения
+ * @param {string} fileName - The name of the file
+ * @returns {string} - The category of the file
+ */
 function getFileCategory(fileName) {
     const extension = path.extname(fileName).toLowerCase();
     if (['.jpg', '.jpeg', '.png', '.gif', '.bmp'].includes(extension)) return translations.images;
@@ -238,7 +278,13 @@ function getFileCategory(fileName) {
     return translations.other;
 }
 
-// Локализованное уведомление
+/**
+ * Show a localized notification
+ * Показать локализованное уведомление
+ * @param {string} titleKey - The key for the title translation
+ * @param {string} bodyKey - The key for the body translation
+ * @param {string} bodyArg - Additional argument for the body
+ */
 function showNotification(titleKey, bodyKey, bodyArg) {
     const title = translations[titleKey] || titleKey;
     const body = `${translations[bodyKey] || bodyKey} ${bodyArg}`;

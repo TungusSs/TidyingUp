@@ -12,7 +12,8 @@ module.exports = {
           name: 'TidyingUp'
         },
         prerelease: false,
-        generateReleaseNotes: true,
+        generateReleaseNotes: false,
+        draft: true
       },
     }
   ],
